@@ -13,6 +13,7 @@
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
+    # ./river.nix
   ];
 
   # Use the systemd-boot EFI boot loader.
@@ -67,6 +68,9 @@
     };
   };
 
+  services.zerotierone.enable = true;
+  services.zerotierone.joinNetworks = [ "ebe7fbd4459486c1" ];
+
   services.fail2ban.enable = true;
   services.openssh.settings.LogLevel = "VERBOSE";
 
@@ -76,9 +80,12 @@
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     wget
     git
+    openssl
     nixfmt-rfc-style
     docker-compose
   ];
+
+  programs.fuse.userAllowOther = true;
 
   hardware.nvidia-container-toolkit.enable = true;
   virtualisation.docker = {
@@ -130,8 +137,8 @@
   services.openssh.enable = true;
 
   # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
+  networking.firewall.allowedTCPPorts = [ 80 81 443 1000 5000 7860 ];
+  networking.firewall.allowedUDPPorts = [ 80 81 443 1000 5000 7860 ];
   # Or disable the firewall altogether.
   networking.firewall.enable = true;
 
