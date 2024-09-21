@@ -72,7 +72,6 @@
   services.zerotierone.joinNetworks = [ "ebe7fbd4459486c1" ];
 
   services.fail2ban.enable = true;
-  services.openssh.settings.LogLevel = "VERBOSE";
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -88,10 +87,9 @@
   programs.fuse.userAllowOther = true;
 
   hardware.nvidia-container-toolkit.enable = true;
-  virtualisation.docker = {
-    enable = true;
-    enableNvidia = true;
-  };
+  virtualisation.docker.enable = true;
+
+virtualisation.docker.enableNvidia = true;
 
   hardware.opengl = {
     enable = true;
@@ -134,7 +132,15 @@
   # List services that you want to enable:
 
   # Enable the OpenSSH daemon.
-  services.openssh.enable = true;
+  services.openssh = {
+    enable = true;
+    settings = {
+      PasswordAuthentication = false;
+      KbdInteractiveAuthentication = false;
+      PermitRootLogin = "no";
+      LogLevel = "VERBOSE";
+    };
+  };
 
   # Open ports in the firewall.
   networking.firewall.allowedTCPPorts = [ 80 81 443 1000 5000 7860 ];
