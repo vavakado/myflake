@@ -13,6 +13,7 @@
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
+    ./desktop.nix
     # ./river.nix
   ];
 
@@ -44,7 +45,7 @@
   i18n.defaultLocale = "en_US.UTF-8";
   nixpkgs.config.allowUnfree = true;
 
-  services.logind.lidSwitch = "ignore";
+  #services.logind.lidSwitch = "ignore";
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.vavakado = {
@@ -89,17 +90,17 @@
   hardware.nvidia-container-toolkit.enable = true;
   virtualisation.docker.enable = true;
 
-virtualisation.docker.enableNvidia = true;
+  virtualisation.docker.enableNvidia = true;
 
   hardware.opengl = {
     enable = true;
-    driSupport = true;
     driSupport32Bit = true;
   };
 
   services.xserver.videoDrivers = [ "nvidia" ];
 
   hardware.nvidia = {
+    open = false;
 
     # Modesetting is required.
     modesetting.enable = true;
@@ -143,8 +144,22 @@ virtualisation.docker.enableNvidia = true;
   };
 
   # Open ports in the firewall.
-  networking.firewall.allowedTCPPorts = [ 80 81 443 1000 5000 7860 ];
-  networking.firewall.allowedUDPPorts = [ 80 81 443 1000 5000 7860 ];
+  networking.firewall.allowedTCPPorts = [
+    80
+    81
+    443
+    1000
+    5000
+    7860
+  ];
+  networking.firewall.allowedUDPPorts = [
+    80
+    81
+    443
+    1000
+    5000
+    7860
+  ];
   # Or disable the firewall altogether.
   networking.firewall.enable = true;
 
