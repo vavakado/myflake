@@ -2,17 +2,13 @@
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}:
+{ config, lib, pkgs, ... }:
 
 {
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
+    ./smb.nix
     # ./river.nix
   ];
 
@@ -23,17 +19,15 @@
   networking.hostName = "laptop-uwu"; # Define your hostname.
   # Pick only one of the below networking options.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-  networking.networkmanager.enable = true; # Easiest to use and most distros use this by default.
+  networking.networkmanager.enable =
+    true; # Easiest to use and most distros use this by default.
 
   # Set your time zone.
   time.timeZone = "Asia/Jerusalem";
 
   nix = {
     package = pkgs.lix;
-    settings.experimental-features = [
-      "nix-command"
-      "flakes"
-    ];
+    settings.experimental-features = [ "nix-command" "flakes" ];
   };
 
   # Configure network proxy if necessary
@@ -49,10 +43,7 @@
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.vavakado = {
     isNormalUser = true;
-    extraGroups = [
-      "wheel"
-      "docker"
-    ]; # Enable ‘sudo’ for the user.
+    extraGroups = [ "wheel" "docker" ]; # Enable ‘sudo’ for the user.
     packages = with pkgs; [ tree ];
     initialPassword = "123";
   };
@@ -60,12 +51,14 @@
   services.avahi = {
     enable = true;
     ipv6 = true;
+    nssmdns4 = true;
     publish = {
       enable = true;
       domain = true;
       userServices = true;
       workstation = true;
     };
+    openFirewall = true;
   };
 
   services.zerotierone.enable = true;
@@ -89,11 +82,10 @@
   hardware.nvidia-container-toolkit.enable = true;
   virtualisation.docker.enable = true;
 
-virtualisation.docker.enableNvidia = true;
+  virtualisation.docker.enableNvidia = true;
 
   hardware.opengl = {
     enable = true;
-    driSupport = true;
     driSupport32Bit = true;
   };
 
@@ -103,6 +95,7 @@ virtualisation.docker.enableNvidia = true;
 
     # Modesetting is required.
     modesetting.enable = true;
+    open = false;
 
     # Nvidia power management. Experimental, and can cause sleep/suspend to fail.
     # Enable this if you have graphical corruption issues or application crashes after waking
@@ -144,7 +137,7 @@ virtualisation.docker.enableNvidia = true;
 
   # Open ports in the firewall.
   networking.firewall.allowedTCPPorts = [ 80 81 443 1000 5000 7860 ];
-  networking.firewall.allowedUDPPorts = [ 80 81 443 1000 5000 7860 ];
+  networking.firewall.allowedUDPPorts = [ 80 81 443 1000 5000 7860 51820 ];
   # Or disable the firewall altogether.
   networking.firewall.enable = true;
 
