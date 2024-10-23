@@ -6,6 +6,11 @@
   # Enable networking
   networking.networkmanager.enable = true;
 
+services.undervolt.enable = true;
+services.undervolt.coreOffset = -90;
+services.undervolt.analogioOffset = -80;
+services.undervolt.gpuOffset = -90;
+
   programs.nh = {
     enable = true;
     clean.enable = true;
@@ -58,6 +63,7 @@
 		spotify
     tmux
     rustup
+		nixfmt
     dwarfs
     btop
     wofi
@@ -68,11 +74,18 @@
     libinput
     htop
     waybar
+	nemo-with-extensions
     btop
+		nixd
     swaybg
     neovide
 		brightnessctl
 fastfetch
+blueberry
+zathura
+elixir
+elixir-ls
+mpv
     vesktop
     swaybg
     mako
@@ -115,6 +128,14 @@ fastfetch
       };
     };
   };
+
+  services.gvfs.enable = true;
+  services.udisks2.enable = true;
+
+
+services.udev.extraRules = ''
+SUBSYSTEM=="input", ATTRS{name}=="*Controller Touchpad", ENV{LIBINPUT_IGNORE_DEVICE}="1"
+'';
 
   programs.gnupg.agent = {
     enable = true;

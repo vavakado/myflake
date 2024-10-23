@@ -14,6 +14,7 @@
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
     ./desktop.nix
+		./cpupower.nix
     # ./river.nix
   ];
 
@@ -111,9 +112,10 @@
     # of just the bare essentials.
     powerManagement.enable = false;
     prime = {
-      sync.enable = true;
+      offload.enable = true;
       intelBusId = "PCI:00:2:0";
       nvidiaBusId = "PCI:1:0:0";
+      offload.enableOffloadCmd = true;
     };
 
     nvidiaSettings = false;
