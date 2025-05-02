@@ -2,13 +2,18 @@
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
-{ config, lib, pkgs, ... }:
+{
+  config,
+  pkgs,
+  ...
+}:
 
 {
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
     ./smb.nix
+    ./docker-update.nix
     # ./river.nix
   ];
 
@@ -19,15 +24,17 @@
   networking.hostName = "laptop-uwu"; # Define your hostname.
   # Pick only one of the below networking options.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-  networking.networkmanager.enable =
-    true; # Easiest to use and most distros use this by default.
+  networking.networkmanager.enable = true; # Easiest to use and most distros use this by default.
 
   # Set your time zone.
   time.timeZone = "Asia/Jerusalem";
 
   nix = {
     package = pkgs.lix;
-    settings.experimental-features = [ "nix-command" "flakes" ];
+    settings.experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
   };
 
   # Configure network proxy if necessary
@@ -43,11 +50,20 @@
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.vavakado = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "docker" "libvirtd" ]; # Enable ‘sudo’ for the user.
+    extraGroups = [
+      "wheel"
+      "docker"
+      "libvirtd"
+    ]; # Enable ‘sudo’ for the user.
     packages = with pkgs; [ tree ];
     initialPassword = "123";
   };
 
+services.dnsmasq.settings = {
+  port = 5353; # Change dnsmasq to use port 5353
+};
+
+  services.resolved.extraConfig = "DNSStubListener=no";
   services.avahi = {
     enable = true;
     ipv6 = true;
@@ -87,7 +103,6 @@
 
   virtualisation.libvirtd.enable = true;
 
-
   hardware.opengl = {
     enable = true;
     driSupport32Bit = true;
@@ -103,7 +118,7 @@
 
     # Nvidia power management. Experimental, and can cause sleep/suspend to fail.
     # Enable this if you have graphical corruption issues or application crashes after waking
-    # up from sleep. This fixes it by saving the entire VRAM memory to /tmp/ instead 
+    # up from sleep. This fixes it by saving the entire VRAM memory to /tmp/ instead
     # of just the bare essentials.
     powerManagement.enable = false;
     prime = {
@@ -140,8 +155,23 @@
   };
 
   # Open ports in the firewall.
-  networking.firewall.allowedTCPPorts = [ 80 81 443 1000 5000 7860 ];
-  networking.firewall.allowedUDPPorts = [ 80 81 443 1000 5000 7860 51820 ];
+  networking.firewall.allowedTCPPorts = [
+    80
+    81
+    443
+    1000
+    5000
+    7860
+  ];
+  networking.firewall.allowedUDPPorts = [
+    80
+    81
+    443
+    1000
+    5000
+    7860
+    51820
+  ];
   # Or disable the firewall altogether.
   networking.firewall.enable = true;
 
