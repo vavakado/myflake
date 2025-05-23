@@ -59,9 +59,9 @@
     initialPassword = "123";
   };
 
-services.dnsmasq.settings = {
-  port = 5353; # Change dnsmasq to use port 5353
-};
+  services.dnsmasq.settings = {
+    port = 5353; # Change dnsmasq to use port 5353
+  };
 
   services.resolved.extraConfig = "DNSStubListener=no";
   services.avahi = {
@@ -91,7 +91,6 @@ services.dnsmasq.settings = {
     openssl
     nixfmt-rfc-style
     docker-compose
-
   ];
 
   programs.fuse.userAllowOther = true;
