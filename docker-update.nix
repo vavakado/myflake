@@ -17,7 +17,7 @@
   systemd.timers.update-docker = {
     wantedBy = [ "timers.target" ];
     timerConfig = {
-      OnCalendar = "hourly";
+      OnCalendar = "weekly";
       Persistent = true;
     };
   };

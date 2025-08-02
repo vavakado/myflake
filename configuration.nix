@@ -1,7 +1,3 @@
-# Edit this configuration file to define what should be installed on
-# your system. Help is available in the configuration.nix(5) man page, on
-# https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
-
 {
   config,
   pkgs,
@@ -14,7 +10,7 @@
     ./hardware-configuration.nix
     ./smb.nix
     ./docker-update.nix
-    # ./river.nix
+    #./river.nix
   ];
 
   # Use the systemd-boot EFI boot loader.
@@ -28,14 +24,6 @@
 
   # Set your time zone.
   time.timeZone = "Asia/Jerusalem";
-
-  nix = {
-    package = pkgs.lix;
-    settings.experimental-features = [
-      "nix-command"
-      "flakes"
-    ];
-  };
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
@@ -63,32 +51,64 @@
     port = 5353; # Change dnsmasq to use port 5353
   };
 
- nix.buildMachines = [{
-    # Will be used to call "ssh builder" to connect to the builder machine.
-    # The details of the connection (user, port, url etc.)
-    # are taken from your "~/.ssh/config" file.
-    hostName = "builder";
-    # CPU architecture of the builder, and the operating system it runs.
-    # Replace the line by the architecture of your builder, e.g.
-    # - Normal Intel/AMD CPUs use "x86_64-linux"
-    # - Raspberry Pi 4 and 5 use  "aarch64-linux"
-    # - M1, M2, M3 ARM Macs use   "aarch64-darwin"
-    # - Newer RISCV computers use "riscv64-linux"
-    # See https://github.com/NixOS/nixpkgs/blob/nixos-unstable/lib/systems/flake-systems.nix
-    # If your builder supports multiple architectures
-    # (e.g. search for "binfmt" for emulation),
-    # you can list them all, e.g. replace with
-    # systems = ["x86_64-linux" "aarch64-linux" "riscv64-linux"];
-    system = "x86_64-linux";
-    # Nix custom ssh-variant that avoids lots of "trusted-users" settings pain
-    protocol = "ssh-ng";
-    # default is 1 but may keep the builder idle in between builds
-    maxJobs = 3;
-    # how fast is the builder compared to your local machine
-    speedFactor = 3;
-    supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
-    mandatoryFeatures = [ ];
-  }];
+  nix = {
+    package = pkgs.lix;
+    settings = {
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
+      substituters = [
+        "https://cache.nixos.org/"
+        "https://cache.garnix.io"
+        "ssh-ng://builder"
+      ];
+      trusted-public-keys = [
+        "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+        "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
+        "builder-name:NBuNNbZm25+A+hr0FAEpb/f+5VOsidyTK3KevTnsLdI="
+      ];
+      trusted-users = [
+        "root"
+        "@wheel"
+        "vavakado"
+      ];
+    };
+  };
+
+  nix.buildMachines = [
+    {
+      # Will be used to call "ssh builder" to connect to the builder machine.
+      # The details of the connection (user, port, url etc.)
+      # are taken from your "~/.ssh/config" file.
+      hostName = "builder";
+      # CPU architecture of the builder, and the operating system it runs.
+      # Replace the line by the architecture of your builder, e.g.
+      # - Normal Intel/AMD CPUs use "x86_64-linux"
+      # - Raspberry Pi 4 and 5 use  "aarch64-linux"
+      # - M1, M2, M3 ARM Macs use   "aarch64-darwin"
+      # - Newer RISCV computers use "riscv64-linux"
+      # See https://github.com/NixOS/nixpkgs/blob/nixos-unstable/lib/systems/flake-systems.nix
+      # If your builder supports multiple architectures
+      # (e.g. search for "binfmt" for emulation),
+      # you can list them all, e.g. replace with
+      # systems = ["x86_64-linux" "aarch64-linux" "riscv64-linux"];
+      system = "x86_64-linux";
+      # Nix custom ssh-variant that avoids lots of "trusted-users" settings pain
+      protocol = "ssh-ng";
+      # default is 1 but may keep the builder idle in between builds
+      maxJobs = 3;
+      # how fast is the builder compared to your local machine
+      speedFactor = 3;
+      supportedFeatures = [
+        "nixos-test"
+        "benchmark"
+        "big-parallel"
+        "kvm"
+      ];
+      mandatoryFeatures = [ ];
+    }
+  ];
   # required, otherwise remote buildMachines above aren't used
   nix.distributedBuilds = true;
 
@@ -120,7 +140,8 @@
     openssl
     nixfmt-rfc-style
     docker-compose
-gh
+    gh
+    jq
   ];
 
   programs.fuse.userAllowOther = true;
@@ -128,13 +149,11 @@ gh
   hardware.nvidia-container-toolkit.enable = true;
   virtualisation.docker.enable = true;
 
-  virtualisation.docker.enableNvidia = true;
-
   virtualisation.libvirtd.enable = true;
 
-  hardware.opengl = {
+  hardware.graphics = {
     enable = true;
-    driSupport32Bit = true;
+    enable32Bit = true;
   };
 
   services.xserver.videoDrivers = [ "nvidia" ];
